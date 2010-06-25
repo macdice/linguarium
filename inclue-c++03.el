@@ -4,14 +4,12 @@
 
 (require 'inclue)
 
-(inclue-load-mappings
- '("string"
-   "std::string"))
+(inclue-load-mappings "string"
+                      '("std::string"))
 
-(inclue-load-mappings
- '("algorithm"
-   "std::find"
-   "std::erase"))
+(inclue-load-mappings "algorithm"
+                      '("std::find"
+                        "std::erase"))
 
 (provide 'inclue-c++03)
 

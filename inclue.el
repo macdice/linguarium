@@ -54,11 +54,10 @@
 (defvar inclue-mappings (make-hash-table :test 'equal)
   "A hash table of indentifier -> header.")
 
-(defun inclue-load-mappings (list)
+(defun inclue-load-mappings (header identifiers)
   "Load LIST consisting of header name followed by identifier strings."
-  (let ((header (car list)))
-    (loop for identifier in (cdr list)
-          do (setf (gethash identifier inclue-mappings) header))))
+  (loop for identifier in identifiers
+        do (setf (gethash identifier inclue-mappings) header))))
 
 (defun inclue-add-header-for-identifier-at-point ()
   "Add the appropriate header for the C++ identifier at point."
