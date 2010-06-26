@@ -52,12 +52,20 @@
       (insert "\n"))))
         
 (defvar inclue-mappings (make-hash-table :test 'equal)
-  "A hash table of indentifier -> header.")
+  "A hash-table of indentifier -> header.")
 
-(defun inclue-load-mappings (header identifiers)
+(defvar inclue-documentation (make-hash-table :test 'equal)
+  "A hash-etable of identifier -> documentation.")
+
+(defun inclue-load-mappings (header identifier-documentation-pairs)
   "Load LIST consisting of header name followed by identifier strings."
-  (loop for identifier in identifiers
-        do (setf (gethash identifier inclue-mappings) header))))
+  (loop for (identifier documentation) in identifier-documentation-pairs 
+        as identifier-name = (symbol-name identifier) do 
+        (setf (gethash identifier-name inclue-mappings) header)
+        (setf (gethash identifier-name inclue-documentation) documentation)))
+
+(defmacro define-inclue-standard-header (header doc-string &rest identifier-pairs)
+  `(inclue-load-mappings ,header ',identifier-pairs))
 
 (defun inclue-add-header-for-identifier-at-point ()
   "Add the appropriate header for the C++ identifier at point."
@@ -73,7 +81,19 @@
                  (message "Including header %s" header)
                  (inclue-add-header header))))
       (message "No recognisable identifier at point"))))
-              
+
+(defun inclue-show-documentation-for-identifier-at-point ()
+  "Show the documentation string for the identifier at point."
+  (interactive)
+  (let ((identifier (inclue-identifier-at-point)))
+    (message identifier)
+    (if identifier
+        (let ((documentation (gethash identifier inclue-documentation)))
+          (if documentation
+              (message documentation)
+              (message "No documentation for %s" identifier)))
+      (message "No recognisable identifier at point"))))
+
 (provide 'inclue)
 
 ;;; inclue.el ends here
