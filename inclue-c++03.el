@@ -15,10 +15,54 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;; TODO this is inkorrect and incomplet, WRITE ME
 
+
+;;; Commentary:
+;; 
+;; Incomplet, inkorrect, work in progress...
+
+;;; History:
+;; 
+
 (require 'inclue)
+
+;;; Code:
 
 (define-inclue-library (c++03 angle-brackets)
   "The C++ standard library headers, from ANSI ISO IEC 14882 2003.")
+
+(define-inclue-header (c++03 "exception")
+  "18.6. Exceptio handling [lib.support.exception]."
+  (std::exception)
+  (std::bad_exception)
+  (std::unexpected_handler)
+  (std::terminate_handler)
+  (std::set_unexpected "std::unexpected_handler std::set_unexpected(std::unexpected_handler f) throw ()")
+  (std::set_terminate "std::terminate_handler std::set_terminate(std::terminate_handler f) throw ()")
+  (std::terminate "void std::terminate()")
+  (std::uncaught_exception "bool std::uncaught_exception() throw ()"))
+
+(define-inclue-header (c++03 "stdexcept")
+  "19.1. Exception classes [lib.std.exceptions]."
+  (std::logic_error "std::logic_error(const string& what)")
+  (std::domain_error "std::domain_error(const string& what)")
+  (std::invalid_argument "std::invalid_argument(const string& what)")
+  (std::length_error "std::length_error(const string& what)")
+  (std::out_of_range "std::out_of_range(const string& what)")
+  (std::runtime_erro "std::runtime_error(const string& what)")
+  (std::range_error "std::range_error(const string& what)")
+  (std::overflow_error "std::overflow_error(const string& what)")
+  (std::underflow_error "std::underflow_error(const string& what)"))
+
+(define-inclue-header (c++03 "cassert")
+  "19.2. Assertions [lib.assertions]."
+  (assert "assert(...)"))
+
+(define-inclue-header (c++03 "cerrno")
+  "19.3. Error numbers [lib.errno]."
+  ;; TODO
+  (ERANGE)
+  (EDOM)
+  (errno))
 
 (define-inclue-header (c++03 "limits")
   "The <limits> header."
@@ -430,6 +474,87 @@ bool std::prev_permutation(BidirectionalIterator first, BidirectionalIterator la
   (std::istreambuf_iterator)
   (std::ostream_iterator)
   (std::ostreambuf_iterator))
+
+(define-inclue-header (c++03 "iostream")
+  "27.3. Standard iostream objects [lib.iostream.objects]."
+  (std::cin)
+  (std::cout)
+  (std::cerr)
+  (std::clog)
+  (std::wcin)
+  (std::wcout)
+  (std::wcerr)
+  (std::wclog))
+
+(define-inclue-header (c++03 "ios")
+  "27.4. Iostream base classes [lib.iostreams.base]."
+  (std::streamoff)
+  (std::streamsize)
+  (std::fpos)
+  (std::ios_base)
+  (std::boolalpha "std::ios_base& std::boolalpha(std::ios_base& str)")
+  (std::noboolalpha "std::ios_base& std::noboolalpha(std::ios_base& str)")
+  (std::showbase "std::ios_base& std::showbase(std::ios_base& str)")
+  (std::noshowbase "std::ios_base& std::noshowbase(std::ios_base& str)")
+  (std::showpoint "std::ios_base& std::showpoint(std::ios_base& str)")
+  (std::noshowpoint "std::ios_base& std::noshowpoint(std::ios_base& str)")
+  (std::showpos "std::ios_base& std::showpos(std::ios_base& str)")
+  (std::noshowpos "std::ios_base& std::noshowpos(std::ios_base& str)")
+  (std::skipws "std::ios_base& std::skipws(std::ios_base& str)")
+  (std::noskipws "std::ios_base& std::noskipws(std::ios_base& str)")
+  (std::uppercase "std::ios_base& std::uppercase(std::ios_base& str)")
+  (std::nouppercase "std::ios_base& std::nouppercase(std::ios_base& str)")
+  (std::unitbuf "std::ios_base& std::unitbuf(std::ios_base& str)")
+  (std::nounitbuf "std::ios_base& std::nounitbuf(std::ios_base& str)")
+  (std::internal "std::ios_base& std::internal(std::ios_base& str)")
+  (std::left "std::ios_base& std::left(std::ios_base& str)")
+  (std::right "std::ios_base& std::right(std::ios_base& str)")
+  (std::dec "std::ios_base& std::dec(std::ios_base& str)")
+  (std::hex "std::ios_base& std::hex(std::ios_base& str)")
+  (std::oct "std::ios_base& std::oct(std::ios_base& str)")
+  (std::fixed "std::ios_base& std::fixed(std::ios_base& str)")
+  (std::scientific "std::ios_base& std::scientific(std::ios_base& str)")
+  ;; the following are a bit hairy -- generally we haven't tried to
+  ;; describe class members, because we lack the syntactic grunt required
+  ;; to handle them -- in this case we could almost get away with something
+  ;; as primivite as the following keywords, except that these members
+  ;; are sometimes used via the names of derived classes... gah
+  (std::ios_base::fmtflags)
+  (std::ios_base::boolalpha)
+  (std::ios_base::dec)
+  (std::ios_base::fixed)
+  (std::ios_base::hex)
+  (std::ios_base::internal)
+  (std::ios_base::left)
+  (std::ios_base::oct)
+  (std::ios_base::right)
+  (std::ios_base::scientific)
+  (std::ios_base::showbase)
+  (std::ios_base::showpoint)
+  (std::ios_base::showpos)
+  (std::ios_base::skipws)
+  (std::ios_base::unitbuf)
+  (std::ios_base::uppercase)
+  (std::ios_base::adjustfield)
+  (std::ios_base::basefield)
+  (std::ios_base::floatfield)
+  (std::ios_base::iostate)
+  (std::ios_base::badbit)
+  (std::ios_base::eofbit)
+  (std::ios_base::failbit)
+  (std::ios_base::goodbit)
+  (std::ios_base::openmode)
+  (std::ios_base::app)
+  (std::ios_base::ate)
+  (std::ios_base::binary)
+  (std::ios_base::in)
+  (std::ios_base::out)
+  (std::ios_base::trunc)
+  (std::ios_base::seekdir)
+  (std::ios_base::beg)
+  (std::ios_base::cur)
+  (std::ios_base::end)
+  (std::ios_base::failure))
 
 (provide 'inclue-c++03)
 
