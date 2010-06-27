@@ -2,13 +2,47 @@
 
 ;;; Commentary:
 ;; 
-;; Sometimes it's hard to remember which header you're supposed to include,
-;; according to the C++ standard, and sometimes your program will compile
-;; on some compilers/libraries even if you don't get it right.  This is a
-;; stupid hack to help me try to get it right at least sometimes.
+;; M-x inclue-add-header-for-identifier-at-point tries to insert an
+;; #include directive for the header that defines the identifier
+;; (type, macro, function) at the point, according to the C or C++
+;; standard (ie, not by scanning headers, but by using knowledge of
+;; the standards), unless it is already present.  It tries to find a
+;; reasonable location for the directive, according to my personal
+;; header aesthetics...
+
+;; M-x inclue-show-documentation-for-identifier-at-point shows very
+;; limited documentation of function arguments to standard functions
+;; in the message buffer, but it's not very clever compared to
+;; c-eldoc-mode, CEDET summary, and various other modes out there that
+;; use real langugae parsing (directly or indirectly) rather than
+;; stupid keyword matching, so it's probably not much use to anyone.
+
+;; M-x inclue-activate-library lets you control which libraries'
+;; headers are considered when searching for the appropriate header;
+;; this is important since there are names which are defined by both C
+;; and C++ headers, and you probably prefer one over the other.
+
+;; To use this you need to load one or more header definitions -- for
+;; example, inclue-c99.el or inclue-c++03.el, and then activate one or
+;; more in the current buffer.
+
+;; It may seem stupid to have hand-maintained meta-data about header
+;; when you could scan the headers themselves, but things are not
+;; always defined in the header that the language standards require
+;; you to include.  The problem seems more acute with standard library
+;; implementations that with typical application code.  This is an
+;; experimental approach to that problem which might turn out to be
+;; useless.
+
+;; Future plans:
 ;;
-;; You need to load some mappings before it will be useful.
-;;
+;; * look into options for scanning headers of other libraries
+;; * research ways to interact with electric keys
+;; * better heuristics for organising #include directives
+;; * highlight the current argument in the message buffer (like SLIME)
+;; * to try understand namespace/using scopes
+;; * give up and learn about the Semantic project
+
 ;; TODO WORK IN PROGRESS
 
 ;;; History:
@@ -23,7 +57,7 @@
 (defun inclue-identifier-at-point ()
   "Return the C++ idendifier under the point."
   (save-excursion
-    (skip-chars-backward "abcdefghijklmnopqrstuvwxyz_:")
+    (skip-chars-backward "a-zA-Z_:") ;; TODO review characters
     (if (looking-at "[a-zA-Z_:]+")
         (buffer-substring-no-properties (point) (match-end 0))
       nil)))
@@ -36,20 +70,38 @@
 
 (defun inclue-add-header (name)
   "Add the header NAME at a sensible location."
-  ;; TODO improve heuristics to taste
+  ;; Intention: keep all the #include <...> directives together and
+  ;; sorted alphabetically; keep all the #include "..." directives
+  ;; together and sorted alphabetically except that the first one may
+  ;; be special if its name is related to the name of the present file
+  ;; (ie in foo.cpp, foo.h/foo.hpp should be the first thing that you
+  ;; include)
+  ;; TODO we only handle #include <...> (system/vendor headers) for now!
+  ;; TODO step over special sibling header
+  ;; TODO handle whitespace like "    #   include     <foo>"
   (save-excursion
-    (goto-char 0)
     ;; find the last existing #include directive
-    (when (re-search-forward "^ *#include.*" nil t)
-      (goto-char 0)
-      (while (re-search-forward "^ *#include.*" nil t)
-        (forward-line)))
-    ;; we are now after the last one, now find alphabetical insertion point
-    (let ((end (point))
-          (new-line (format "#include <%s>" name)))
-      ;; TODO find alphabetical insertion point
+    (goto-char (point-max))
+    (if (re-search-backward "^#include" nil t)
+        (progn
+          (beginning-of-line))
+      (goto-char 0))
+    ;; we are now after the last one, or at top of buffer
+    (let ((new-line (format "#include <%s>" name)))
+      ;; walk up to the top of the current block of #includes
+      (while (and (> (line-number-at-pos) 1)
+                  (looking-at "#include"))
+        (forward-line -1))
+      ;; now walk down until we find the right insertion point
+      (while (and (looking-at "#include")
+                  (string< (thing-at-point 'line) new-line))
+        (forward-line))
       (insert new-line)
-      (insert "\n"))))
+      (insert "\n")
+      ;; if the next line isn't an include or a blank line then insert
+      ;; a new line
+      (unless (or (looking-at " *# *include") (looking-at " *$"))
+        (insert "\n")))))
 
 (defstruct inclue-library
   "A record type to hold documentation and header info."
@@ -105,7 +157,7 @@
                                 (inclue-library-header-table library))))
            (when header
              (if (inclue-has-header header)
-                 (message "Header %s already included" header) ;; terminate
+                 (message "Header %s already included" header)
                (progn
                  (message "Including header %s" header)
                  (inclue-add-header header))))))))))

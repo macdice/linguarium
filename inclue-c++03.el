@@ -1,17 +1,33 @@
 ;;; inclue-c++03.el --- C++ 03 header info for inclue.el
+;; Copyright (c) 2010 Thomas Munro munro@ip9.org
 
-;; TODO write me              
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; TODO this is inkorrect and incomplet, WRITE ME
 
 (require 'inclue)
 
-(define-inclue-standard-header "limits"
+(define-inclue-library (c++03 angle-brackets)
+  "The C++ standard library headers, from ANSI ISO IEC 14882 2003.")
+
+(define-inclue-header (c++03 "limits")
   "The <limits> header."
   (std::numeric_limits)
   (std::float_round_style)
   (std::float_denorm_style)
   (std::numeric_limits))
 
-(define-inclue-standard-header "climits"
+(define-inclue-header (c++03 "climits")
   "The <climits> header."
   (CHAR_BIT)
   (CHAR_MAX)
@@ -30,12 +46,12 @@
   (ULONG_MAX)
   (USHRT_MAX)) ;; TODO
 
-(define-inclue-standard-header "utility"
+(define-inclue-header (c++03 "utility")
   "The General utilities library [lib.utilities]."
   (std::pair "std::pair(const T1& x, const T2& y)")
   (std::make_pair "std::pair<T1, T2> std::make_pair(T1, T2)"))
 
-(define-inclue-standard-header "functional"
+(define-inclue-header (c++03 "functional")
   "The functional library [lib.function.objects]."
   (std::plus)
   (std::minus)
@@ -79,7 +95,7 @@ std::const mem_fun_ref1_t<S, T, A> std::mem_fun_ref(S (T::*s)(A) const)")
   (std::const_mem_fun_t)
   (std::const_mem_fun1_t))
 
-(define-inclue-standard-header "memory"
+(define-inclue-header (c++03 "memory")
   "The Memory library [lib.memory]."
   (std::allocator)
   (std::raw_storage_iterator)
@@ -92,7 +108,7 @@ std::const mem_fun_ref1_t<S, T, A> std::mem_fun_ref(S (T::*s)(A) const)")
 std::auto_ptr(std::auto_ptr&)
 std::auto_ptr(std::auto_ptr<Y>&)"))
 
-(define-inclue-standard-header "cstdlib"
+(define-inclue-header (c++03 "cstdlib")
   "The Standard C library [lib.c.malloc]."
   (EXIT_FAILURE)
   (EXIT_SUCCESS)
@@ -114,7 +130,7 @@ std::auto_ptr(std::auto_ptr<Y>&)"))
   (std::wctomb)
   (std::wcstombs))
 
-(define-inclue-standard-header "locale"
+(define-inclue-header (c++03 "locale")
   "The locale library."
   (std::use_facet "const Facet& std::use_facet(const std::locale&)")
   (std::has_facet "bool std::has_facet(const std::locale&)")
@@ -157,7 +173,7 @@ std::locale(const std::locale& other, Facet *f)
 std::locale(const std::locale& other, const std::locale& one, category)"))
 
 
-(define-inclue-standard-header "cstring"
+(define-inclue-header (c++03 "cstring")
   "The C library string header."
   (std::size_t)
   (std::memchr)
@@ -184,7 +200,7 @@ std::locale(const std::locale& other, const std::locale& one, category)"))
   (str::strxfrm))
 
 
-(define-inclue-standard-header "ctime"
+(define-inclue-header (c++03 "ctime")
   "The C library time header."
   (std::clock_t)
   (std::time_t)
@@ -199,20 +215,22 @@ std::locale(const std::locale& other, const std::locale& one, category)"))
   (std::time)
   (std::strftime))
 
-(define-inclue-standard-header "string"
+(define-inclue-header (c++03 "string")
   "The string library."
+  ;; TODO string vs basic_string...
   (std::char_traits)
-  (std::basic_string "std::basic_string(const Allocator& a = Allocator())
-std::basic_string(const std::basic_string& str)
-std::basic_string(const std::basic_string& str, size_type pos, size_type n = npos, const Allocator& a = Allocator())
-std::basic_string(const charT* s, size_type n, const Allocator& a = Allocator())
-std::basic_string(const charT* s, const Allocator& a = Allocator())
-std::basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator())
-std::basic_string()")
+  (std::basic_string)
+  (std::string "std::string(const Allocator& a = Allocator())
+std::string(const std::basic_string& str)
+std::string(const std::basic_string& str, size_type pos, size_type n = npos, const Allocator& a = Allocator())
+std::string(const charT* s, size_type n, const Allocator& a = Allocator())
+std::string(const charT* s, const Allocator& a = Allocator())
+std::string(InputIterator begin, InputIterator end, const Allocator& a = Allocator())
+std::string()")
   (std::getline "std::basic_istream<charT, traits>& std::getline(std:basic_istream<charT, traits>& is, std::basic_string<charT, traits, Allocator>& str)
 std::basic_istream<charT, traits>& std::getline(std:basic_istream<charT, traits>& is, std::basic_string<charT, traits, Allocator>& str, charT delim)"))
 
-(define-inclue-standard-header "cctype"
+(define-inclue-header (c++03 "cctype")
   "The character type library."
   (std::isalnum)
   (std::isalpha)
@@ -226,9 +244,9 @@ std::basic_istream<charT, traits>& std::getline(std:basic_istream<charT, traits>
   (std::isupper)
   (std::isxdigit)
   (std::tolower)
-  (std::toupper)))
+  (std::toupper))
 
-(define-inclue-standard-header "cwctype"
+(define-inclue-header (c++03 "cwctype")
   "The wide character library."
   (std::wctrans_t)
   (std::wctype_t)
@@ -251,7 +269,7 @@ std::basic_istream<charT, traits>& std::getline(std:basic_istream<charT, traits>
   (std::wctrans)
   (std::wctype))
 
-(define-inclue-standard-header "algorithm"
+(define-inclue-header (c++03 "algorithm")
   "The Algorithms library [lib.algorithms]."
   (std::for_each "Function std::for_each(InputIterator first, InputIterator last, Function f)")
   (std::find "InputIterator std::find(InputIterator first, InputIterator last, const T& value)")
@@ -357,41 +375,41 @@ bool std::next_permutation(BidirectionalIterator first, BidirectionalIterator la
   (std::prev_permutation "bool std::prev_permutation(BidirectionalIterator first, BidirectionalIterator last)
 bool std::prev_permutation(BidirectionalIterator first, BidirectionalIterator last, Compare comp)"))
 
-(define-inclue-standard-header "deque"
+(define-inclue-header (c++03 "deque")
   "The <deque> header."
   (std::deque))
 
-(define-inclue-standard-header "list"
+(define-inclue-header (c++03 "list")
   "The <list> header."
   (std::list))
 
-(define-inclue-standard-header "queue"
+(define-inclue-header (c++03 "queue")
   "The <queue> header."
   (std::queue))
 
-(define-inclue-standard-header "stack"
+(define-inclue-header (c++03 "stack")
   "The <stack> header."
   (std::stack))
 
-(define-inclue-standard-header "vector"
+(define-inclue-header (c++03 "vector")
   "The <vector> header."
   (std::vector))
 
-(define-inclue-standard-header "map"
+(define-inclue-header (c++03 "map")
   "The <map> header."
   (std::map)
   (std::multimap))
 
-(define-inclue-standard-header "set"
+(define-inclue-header (c++03 "set")
   "The <set> header."
   (std::set)
   (std::multiset))
 
-(define-inclue-standard-header "bitset"
+(define-inclue-header (c++03 "bitset")
   "The <bitset> header."
   (std::bitset))
 
-(define-inclue-standard-header "iterator"
+(define-inclue-header (c++03 "iterator")
   "The <iterator> header."
   (std::iterator_traits)
   (std::iterator)
